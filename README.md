@@ -12,8 +12,8 @@ Usage: ./transcode.sh
 
 ### Build container.
 
-docker build -t ubuntu-transcoder .
+<pre>docker build -t ubuntu-transcoder .</pre>
 
 ### Run container.
 
-docker run -d -p 8043:8043/udp ubuntu-transcoder
+<pre>docker run -d -p 8043:8043/udp ubuntu-transcoder</pre>
