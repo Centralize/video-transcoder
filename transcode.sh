@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# Copyright 2023 by OpenLAB. All rights reserved.
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <port>"
+  exit 1
+fi
+
+port="$1" # Port number for HTTP server
 
 # Input video formats
 input_formats=("mp4" "mkv" "avi") # Add more formats if needed
@@ -14,22 +19,21 @@ num_streams=8
 # Array to store incoming streams
 incoming_streams=()
 
-# Loop to transcode videos in real-time
-while true; do
+# Start HTTP server to listen for incoming streams
+nc -l -p "$port" | while true; do
   # Check if incoming streams array is not full
   if [ ${#incoming_streams[@]} -lt $num_streams ]; then
-    for i in "${input_formats[@]}"; do
-      input_files=($(ls *.$i 2>/dev/null)) # Get all files with the input format
-      for file in "${input_files[@]}"; do
-        if [[ ! " ${incoming_streams[@]} " =~ " ${file} " ]]; then
-          # Add incoming stream to array
-          incoming_streams+=("$file")
-          echo "Incoming stream: $file"
-        fi
-      done
-    done
+    read -r file
+    if [[ ! " ${incoming_streams[@]} " =~ " ${file} " ]]; then
+      # Add incoming stream to array
+      incoming_streams+=("$file")
+      echo "Incoming stream: $file"
+    fi
   fi
+done &
 
+# Loop to transcode videos in real-time
+while true; do
   # Process incoming streams
   for stream in "${incoming_streams[@]}"; do
     # Transcode video in the background
