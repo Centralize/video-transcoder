@@ -1,11 +1,23 @@
 #!/bin/bash
 
+# Function to check if a command is available
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+# Check if ffmpeg and nc are installed
+if ! command_exists "ffmpeg" || ! command_exists "nc"; then
+  echo "Error: Required components (ffmpeg and nc) are not installed."
+  echo "Please install them before running this script."
+  exit 1
+fi
+
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <port>"
   exit 1
 fi
 
-port="$1" # Port number for HTTP server
+port="$1" # Port number for UDP server
 
 # Input video formats
 input_formats=("mp4" "mkv" "avi") # Add more formats if needed
@@ -19,8 +31,8 @@ num_streams=8
 # Array to store incoming streams
 incoming_streams=()
 
-# Start HTTP server to listen for incoming streams
-nc -l -p "$port" | while true; do
+# Start UDP server to listen for incoming streams
+nc -ul -p "$port" | while true; do
   # Check if incoming streams array is not full
   if [ ${#incoming_streams[@]} -lt $num_streams ]; then
     read -r file
