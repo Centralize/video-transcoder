@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Copyright 2023 by OpenLAB. All rights reserved.
+
 # Input video formats
 input_formats=("mp4" "mkv" "avi") # Add more formats if needed
 
